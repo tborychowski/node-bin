@@ -1,0 +1,11 @@
+*.diff
+*.err
+*.log
+.cache
+node_modules
+bower_components
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.sublime-*
+src/*.json
