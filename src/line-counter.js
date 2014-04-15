@@ -1,5 +1,3 @@
-/*global require, console */
-
 var Args = new require('arg-parser'), args,
 	Msg = require('node-msg'),
 	FS = require('fs'),
@@ -28,7 +26,7 @@ var Args = new require('arg-parser'), args,
 		}
 		files.forEach(function (file) { count += FS.readFileSync(file).toString().split('\n').length; });
 
-		console.log('\nThere is ' + Msg.paint(count, 'cyan bold') + ' lines of code');
+		Msg.log('\nThere is ' + Msg.paint(count, 'cyan bold') + ' lines of code');
 	};
 
 
