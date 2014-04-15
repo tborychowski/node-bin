@@ -4,7 +4,7 @@ var Args = require('arg-parser'), args,
 	Path = require('path'),
 	_url = '?alt=json&orderby=starttime&singleevents=true&sortorder=ascending&futureevents=true&max-results=5',
 
-	_confFname = __dirname + '\\' + Path.basename(__filename, '.js') + '.json',
+	_confFname = __dirname + Path.sep + Path.basename(__filename, Path.extname(__filename)) + '.json',
 	_conf = FS.existsSync(_confFname) ? require(_confFname) : null,
 
 	noConfig = function () {
