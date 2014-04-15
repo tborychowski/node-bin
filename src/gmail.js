@@ -1,4 +1,3 @@
-/*global require */
 var Args = require('arg-parser'), args,
 	Msg  = require('node-msg'),
 	Imap = require('imap'),
@@ -20,7 +19,11 @@ var Args = require('arg-parser'), args,
 
 	_decrypt = function (text, salt) {
 		var decipher = Crypto.createDecipher('aes-256-cbc', salt), dec = decipher.update(text, 'hex', 'utf8');
-		dec += decipher.final('utf8');
+		try { dec += decipher.final('utf8'); }
+		catch (e) {
+			Msg.error('Cannot decrypt credentials. Are you using' + (salt === ' ' ? '' : ' correct') + ' SALT?');
+			process.exit();
+		}
 		return dec;
 	},
 
@@ -79,7 +82,7 @@ var Args = require('arg-parser'), args,
 				successResult = box.messages;
 				successResult.unread = 0;
 
-				imap.search([ 'UNSEEN', ['SINCE', '2014'] ], function (err, results) {
+				imap.search([ 'UNSEEN', ['SINCE', (new Date()).getFullYear() ] ], function (err, results) {
 					if (!results || !results.length) {
 						imap.end();
 						successResult.msg = 'You have no unread messages!';
@@ -87,7 +90,7 @@ var Args = require('arg-parser'), args,
 					}
 
 					var f = imap.fetch(results, { bodies: '' });
-					//var f = imap.seq.fetch('1:3', { bodies: 'HEADER.FIELDS (FROM TO SUBJECT DATE)', struct: true });
+					// var f = imap.seq.fetch('1:3', { bodies: 'HEADER.FIELDS (FROM TO SUBJECT DATE)', struct: true });
 					f.on('message', function (msg, seqno) {
 						successResult.unread ++;
 

@@ -46,6 +46,9 @@ var Args = require('arg-parser'), args,
 	},
 
 	_init = function () {
+		if (!_conf) return noConfig();
+		if (_conf.length) _url = _conf[0] + _url;
+
 		var resp = '', load = new Msg.loading();
 		require('https').request(_url, function (res) {
 			res.on('data', function (chunk) { resp += chunk; });
@@ -54,7 +57,5 @@ var Args = require('arg-parser'), args,
 	};
 
 
-if (!_conf) return noConfig();
-
-args = new Args('Calendar', '1.0', 'List tasks for today');
+args = new Args('Calendar', '1.1', 'List tasks for today');
 if (args.parse()) _init(args.params);
