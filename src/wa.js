@@ -1,4 +1,3 @@
-/*global require */
 var Args = require('arg-parser'), args,
 	Msg  = require('node-msg'),
 	XML = require('xml2js').parseString,

@@ -1,5 +1,4 @@
-/*global require */
-// jshint -W084
+// jshint latedef: false
 var Args    = require('arg-parser'), args,
 	Msg     = require('node-msg'),
 	Cheerio = require('cheerio'),
@@ -14,7 +13,7 @@ var Args    = require('arg-parser'), args,
 	_table = [],
 	_total = 0,
 
-	_ucWords = function (str) { return str.toLowerCase().replace(/\b[a-z]/g, function(c) { return c.toUpperCase(); }); },
+	_ucWords = function (str) { return str.toLowerCase().replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); }); },
 	_getText = function (node, selector) { return node.find(selector).text().trim(); },
 	_getPrice = function (node, selector) { return _getText(node, selector).trim().replace(/\n/g, '').replace(/(.*€)(\d+,\d+)/, '$2'); },
 	_getRating = function (node, selector) { return node.find(selector).attr('alt'); },
@@ -28,6 +27,7 @@ var Args    = require('arg-parser'), args,
 
 		return _ucWords(name);
 	},
+
 	_getDesc = function (node, selector) {
 		return _getText(node, selector).trim()
 			.replace(/Semi\-Detached/i, '')
@@ -44,12 +44,19 @@ var Args    = require('arg-parser'), args,
 		return false;
 	},
 
+	_printTable = function () {
+		_loader.stop(_total);
+		_table.forEach(function (el) {
+			Msg.log(Msg.cyan(el.price) + ' ' + Msg.yellow(el.name) + Msg.grey(' ' + el.rating + ', ') + Msg.grey(el.desc));
+		});
+	},
+
 	_formatResponse = function (html, page) {
 		var $ = Cheerio.load(html),
 			boxes = $('#results .resultBody'),
 			nextPageBtn = $('#main .pager .next'),
 			isLast = (!nextPageBtn.length || nextPageBtn.hasClass('disabled')),
-			name, desc, date, price, rating;
+			name, desc, price, rating;
 
 		_total += boxes.length;
 
@@ -67,14 +74,6 @@ var Args    = require('arg-parser'), args,
 		_load(page + 1);
 	},
 
-
-	_printTable = function () {
-		_loader.stop(_total);
-		_table.forEach(function (el) {
-			Msg.log(Msg.cyan(el.price) + ' ' + Msg.yellow(el.name) + Msg.grey(' ' + el.rating + ', ') + Msg.grey(el.desc));
-		});
-	},
-
 	_url = function (page) {
 		return 'http://www.myhome.ie/residential/dublin-county/semi-detached-house-for-sale-in-lucan?' +
 			'MinEnergyRating=D1&minbeds=3&maxbeds=3&page=' + page +
@@ -86,10 +85,10 @@ var Args    = require('arg-parser'), args,
 		require('http').request(_url(page), function (res) {
 			res.on('data', function (chunk) { resp += chunk; });
 			res.on('end', function () { _formatResponse(resp, page); });
-		}).on('error', function (e) { load.stop(); Msg.error(e.message); }).end();
+		}).on('error', function (e) { _loader.stop(); Msg.error(e.message); }).end();
 	};
 
-args = Args('home.ie', '1.0', 'Fetch home.ie search results');
+args = new Args('home.ie', '1.0', 'Fetch home.ie search results');
 if (args.parse()) {
 	_loader = new Msg.loading((new Date()).toISOString().substr(0, 10) + ', total: ');
 	_load(1);

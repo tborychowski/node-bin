@@ -1,4 +1,4 @@
-/*jshint loopfunc: true, latedef: false */
+// jshint loopfunc: true, latedef: false
 var
 	OS = require('os'),
 	Msg = require('node-msg'),

@@ -1,4 +1,3 @@
-/*global require */
 // http://openweathermap.org/api
 var Args = require('arg-parser'), args,
 	Msg  = require('node-msg'),

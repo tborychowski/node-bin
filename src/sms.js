@@ -1,5 +1,3 @@
-/*global require, console, __dirname */
-
 var Msg = require('node-msg'),
 	Args = require('arg-parser'), args,
 	FS = require('fs'),

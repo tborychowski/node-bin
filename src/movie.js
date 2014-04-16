@@ -1,4 +1,3 @@
-/* global require */
 var Args = require('arg-parser'), args,
 	Msg = require('node-msg'),
 	Cheerio = require('cheerio'),
@@ -6,16 +5,15 @@ var Args = require('arg-parser'), args,
 	HTTP = require('http'),
 	_cln = [ '\\w264', 'mp3', 'xvid', 'divx', 'aac', 'ac3', '~', '[\\s|-]rip', 'download', 'dubbed',
 		'juggs', 'prisak', 'rajonboy', 'YIFY', 'tamil', 'ddhrg', 'team', 'mafiaking', 'hon3y', 'publichd', 'unrated',
-		'truefrench', 'carpediem', 'maniacs', 'd3si', 'sample', 'dts', 'torrent', 'art3mis', 'french', 'akatsuki',, 'utt',
+		'truefrench', 'carpediem', 'maniacs', 'd3si', 'sample', 'dts', 'torrent', 'art3mis', 'french', 'akatsuki', 'utt',
 		'(\\d{3,4}p)', '(\\d+mb)', '([x|\\d]+cd)', '\\s\\d', 'brrip', 'dvd(scr(n)?)?(rip)?', 'blu\\-?ray', 'bdrip',
-		'h3ll2p4y', 'italian', 't4p3', 'vision', 'venum', 'rarbg', '(e\-)?subs', 'hellraz0r', 'jyk', 'mms', 'titan',
+		'h3ll2p4y', 'italian', 't4p3', 'vision', 'venum', 'rarbg', '(e\\-)?subs', 'hellraz0r', 'jyk', 'mms', 'titan',
 		'k3ly', 'presents00', 'destroy', 'hd', 'hc', 'rip', 'aqos', 'web', 'readnfo', 'subtitles', 'dus',
 		'web\\-?dl', '(br|hd)rip', 'hdcam(rip)?', 'r5', 'r6', 'cam', 'sumo', 'webrip', 'ntsc'
 	],
 
 	_year = function (str) { return (/(19|20)(\d{2})/).test(str) ? str.replace(/.*(19|20)(\d{2}).*/, '$1$2') : '?'; },
 	_age = function (str) { return str.replace(/^(\d+)(.+)(d|h)(\w+s?)$/, '$1$3'); },
-	_size = function (str) { return str; },
 
 	_quality = function (str, rate) {
 		var q = {};

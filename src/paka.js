@@ -1,4 +1,3 @@
-/* global require */
 var Args = require('arg-parser'), args,
 	Http = require('http'),
 	Msg = require('node-msg'),

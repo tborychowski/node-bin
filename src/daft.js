@@ -1,5 +1,4 @@
-/*global require */
-// jshint -W084
+// jshint latedef: false
 var Args    = require('arg-parser'), args,
 	Msg     = require('node-msg'),
 	Cheerio = require('cheerio'),
@@ -14,7 +13,7 @@ var Args    = require('arg-parser'), args,
 	_table = [],
 	_total = 0,
 
-	_ucWords = function (str) { return str.toLowerCase().replace(/\b[a-z]/g, function(c) { return c.toUpperCase(); }); },
+	_ucWords = function (str) { return str.toLowerCase().replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); }); },
 	_getText = function (node, selector) { return node.find(selector).text().trim(); },
 	_getName = function (node, selector) { return _ucWords(_getText(node, selector).split('\n')[0].trim().replace(', Co. Dublin', '').replace(', Lucan', '')); },
 	_getDesc = function (node, selector) { return _getText(node, selector).split('|').map(function (s) { return s.replace(/ house/i, '').trim(); }).join(', ').trim(); },
@@ -48,7 +47,7 @@ var Args    = require('arg-parser'), args,
 			if (!name || !price) return;
 			if (reg && !reg.test(desc)) { _total--; return; }
 			if (name.length > 30) name = name.substr(0, 27) + '...';
-			desc = desc.replace(/(semi\-detached, )(\d{1})( beds?,? ?)(\d{1})?( baths?)?/i, function (s0, sem, bed, s1, bth, s2) {
+			desc = desc.replace(/(semi\-detached, )(\d{1})( beds?,? ?)(\d{1})?( baths?)?/i, function (s0, sem, bed, s1, bth) {
 				return '(' + bed + (bth ? '/' + bth : '') + ')';
 			});
 
@@ -77,10 +76,10 @@ var Args    = require('arg-parser'), args,
 		require('http').request(_url(page), function (res) {
 			res.on('data', function (chunk) { resp += chunk; });
 			res.on('end', function () { _formatResponse(resp, page); });
-		}).on('error', function (e) { load.stop(); Msg.error(e.message); }).end();
+		}).on('error', function (e) { _loader.stop(); Msg.error(e.message); }).end();
 	};
 
-args = Args('Daft', '1.0', 'Fetch daft search results');
+args = new Args('Daft', '1.0', 'Fetch daft search results');
 if (args.parse()) {
 	// args.params
 	_loader = new Msg.loading((new Date()).toISOString().substr(0, 10) + ', total: ');

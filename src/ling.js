@@ -1,4 +1,3 @@
-/*global require */
 var Args = require('arg-parser'), args,
 	Msg = require('node-msg');
 
@@ -44,7 +43,7 @@ function translate(arg) {
 }
 
 
-args = Args('Node Translator', '1.0', 'Translate a word or a phrase', 'LANG is a language code, e.g.: en, pl, es, fr, ru');
+args = new Args('Node Translator', '1.0', 'Translate a word or a phrase', 'LANG is a language code, e.g.: en, pl, es, fr, ru');
 args.add({ name: 'from', desc: 'enforce source language', switches: ['-f', '-from', '--from'], value: 'lang', default: 'auto', required: true });
 args.add({ name: 'to', desc: 'enforce target language', switches: ['-t', '-to', '--to'], value: 'lang', default: 'pl', required: true });
 args.add({ name: 'phrase', desc: 'a word or a phrase to translate', required: true });

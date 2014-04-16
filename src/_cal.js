@@ -31,11 +31,9 @@ var Args = require('arg-parser'), args,
 		return ev;
 	},
 
-
 	_parseResponse = function (resp) {
 		// var name = resp.feed.title.$t, lud = new Date(resp.feed.updated.$t);
 		var name, ev, today = (new Date()).toUTCString().substr(0, 11).replace(/,/, '');
-
 		Msg.log(Msg.paint(today, 'yellow bold') + Msg.paint('  TODAY', 'white bold'));
 		Msg.log(Msg.yellow('----------') + '  --------------------------------');
 		resp.feed.entry.forEach(function (ent) {
@@ -48,7 +46,6 @@ var Args = require('arg-parser'), args,
 	_init = function () {
 		if (!_conf) return noConfig();
 		if (_conf.length) _url = _conf[0] + _url;
-
 		var resp = '', load = new Msg.loading();
 		require('https').request(_url, function (res) {
 			res.on('data', function (chunk) { resp += chunk; });

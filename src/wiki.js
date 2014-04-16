@@ -1,14 +1,12 @@
-/*global require */
-// jshint -W084
 var Args       = require('arg-parser'), args,
 	Msg        = require('node-msg'),
-	_          = require("underscore"),
-	_select    = require("soupselect").select,
-	HTMLParser = require("htmlparser"),
+	_          = require('underscore'),
+	_select    = require('soupselect').select,
+	HTMLParser = require('htmlparser'),
 
 	_unescapeHTML = function (str) {
 		if (str === null) return '';
-		var escapeChars = { lt: '<', gt: '>', quot: '"', amp: '&', apos: "'" };
+		var escapeChars = { lt: '<', gt: '>', quot: '"', amp: '&', apos: '\'' };
 		return String(str).replace(/\&([^;]+);/g, function (entity, entityCode) {
 			var match;
 			if (entityCode in escapeChars) return escapeChars[entityCode];
@@ -17,12 +15,12 @@ var Args       = require('arg-parser'), args,
 			return entity;
 		});
 	},
-	_ucWords = function (str) { return str.toLowerCase().replace(/\b[a-z]/g, function(c) { return c.toUpperCase(); }); },
+	_ucWords = function (str) { return str.toLowerCase().replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); }); },
 	_urlFromQuery = function (str, lang) {
 		return 'https://' + lang + '.wikipedia.org/wiki/' + encodeURIComponent(_ucWords(str).replace(/[ ]/g, '_'));
 	},
 	parseHTML = function (html, selector) {
-		var handler = new HTMLParser.DefaultHandler((function () {}), { ignoreWhitespace: true }),
+		var handler = new HTMLParser.DefaultHandler(function () {}, { ignoreWhitespace: true }),
 			parser = new HTMLParser.Parser(handler);
 		parser.parseComplete(html);
 		return _select(handler.dom, selector);
@@ -60,7 +58,7 @@ var Args       = require('arg-parser'), args,
 		}).on('error', function (e) { Msg.error(e.message); }).end();
 	};
 
-args = Args('Wiki', '1.0', 'Fetch wikipedia article');
+args = new Args('Wiki', '1.0', 'Fetch wikipedia article');
 args.add({ name: 'phrase', desc: 'a word or a phrase', required: true });
 args.add({ name: 'lang', desc: 'target language', switches: ['-l', '--lang'], value: 'lang', default: 'en' });
 if (args.parse()) _init(args.params);
