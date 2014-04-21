@@ -5,7 +5,7 @@ var gulp = require('gulp'),
 
 gulp.task('build', function () {
 	var files = gulp.src('./src/*.js');
-	if (!isWin) files = files.pipe(insert.prepend('#!/usr/bin/node\n'));
+	if (!isWin) files = files.pipe(insert.prepend('#!/usr/bin/env node\n'));
 	return files.pipe(gulp.dest('./dist'));
 });
 
