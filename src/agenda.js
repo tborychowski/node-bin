@@ -12,7 +12,7 @@ var Args = require('arg-parser'), args,
 		var sample = '[\n\t"your-google-calendar-xml-url"\n]';
 		FS.writeFile(_confFname, sample, function (err) {
 			if (err) Msg.error(err);
-			else Msg.log('A sample config file was created: sms.json');
+			else Msg.log('A sample config file was created: ' + _confFname);
 		});
 	},
 
