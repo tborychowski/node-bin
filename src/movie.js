@@ -50,7 +50,7 @@ var Args = require('arg-parser'), args,
 
 	_parseResponse = function (html) {
 		var $ = Cheerio.load(html), table = [ ['Name', 'Rip', 'Year', 'Age'] ], row;
-		$('#wrapperInner .mainpart .doublecelltable table').eq(1).find('tr').each(function () {
+		$('#wrapperInner .mainpart .doublecelltable table').eq(0).find('tr').each(function () {
 			if (!$(this).hasClass('firstr')) {
 				row = _getRow($(this));
 				if (row) table.push(row);
