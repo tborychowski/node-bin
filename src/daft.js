@@ -26,6 +26,10 @@ var Args    = require('arg-parser'), args,
 		date[1] = ('0' + date[1]).substr(-2);
 		return { date: date.reverse().join('-'), rel: rel };
 	},
+	_unwanted = function (name) {
+		var unwanted = [ 'foxborough', 'foxford', 'earlsfort', 'liffey', 'ashberry', 'finns', 'elm' ];
+		return (new RegExp(unwanted.join('|'), 'ig')).test(name);
+	},
 
 	_formatResponse = function (html, page) {
 		var $ = Cheerio.load(html), boxes = $('#sr_content .box'), name, price, date, desc,
@@ -46,6 +50,8 @@ var Args    = require('arg-parser'), args,
 			date  = _getDate(node, '.text-block .date_entered');
 			if (!name || !price) return;
 			if (reg && !reg.test(desc)) { _total--; return; }
+			if (_unwanted(name)) { _total--; return; }
+
 			if (name.length > 30) name = name.substr(0, 27) + '...';
 			desc = desc.replace(/(semi\-detached, )(\d{1})( beds?,? ?)(\d{1})?( baths?)?/i, function (s0, sem, bed, s1, bth) {
 				return '(' + bed + (bth ? '/' + bth : '') + ')';

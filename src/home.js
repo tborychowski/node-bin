@@ -39,9 +39,8 @@ var Args    = require('arg-parser'), args,
 	},
 
 	_unwanted = function (name) {
-		name = name.toLowerCase();
-		if (name.indexOf('foxborough') > -1) return true;
-		return false;
+		var unwanted = [ 'foxborough', 'foxford', 'earlsfort', 'liffey', 'ashberry', 'finns', 'elm' ];
+		return (new RegExp(unwanted.join('|'), 'ig')).test(name);
 	},
 
 	_printTable = function () {
