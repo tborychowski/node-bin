@@ -5,10 +5,11 @@ var Args = require('arg-parser'), args,
 	HTTP = require('http'),
 	_cln = [ '\\w264', 'mp3', 'xvid', 'divx', 'aac', 'ac3', '~', '[\\s|-]rip', 'download', 'dubbed',
 		'juggs', 'prisak', 'rajonboy', 'YIFY', 'tamil', 'ddhrg', 'team', 'mafiaking', 'hon3y', 'publichd', 'unrated',
-		'truefrench', 'carpediem', 'maniacs', 'd3si', 'sample', 'dts', 'torrent', 'art3mis', 'french', 'akatsuki', 'utt',
+		'truefrench', 'carpediem', 'maniacs', 'd3si', 'sample', 'h?dts', 'torrent', 'art3mis', 'french', 'akatsuki', 'utt',
 		'(\\d{3,4}p)', '(\\d+mb)', '([x|\\d]+cd)', '\\s\\d', 'brrip', 'dvd(scr(n)?)?(rip)?', 'blu\\-?ray', 'bdrip',
 		'h3ll2p4y', 'italian', 't4p3', 'vision', 'venum', 'rarbg', '(e\\-)?subs', 'hellraz0r', 'jyk', 'mms', 'titan',
-		'k3ly', 'presents00', 'destroy', 'hd', 'hc', 'rip', 'aqos', 'web', 'readnfo', 'subtitles', 'dus',
+		'k3ly', 'presents00', 'destroy', 'hd', 'hc', 'rip', 'aqos', 'web', 'readnfo', 'subtitles', 'dus', 'BL4CKP34RL',
+		'ShAaNiG', 'new( good)? source', 'v2',
 		'web\\-?dl', '(br|hd)rip', 'hdcam(rip)?', 'r5', 'r6', 'cam', 'sumo', 'webrip', 'ntsc'
 	],
 
