@@ -3,8 +3,8 @@ var Args    = require('arg-parser'), args,
 	Msg     = require('node-msg'),
 	Cheerio = require('cheerio'),
 	_params = {
-		priceFrom: 175000,
-		priceTo: 250000,
+		priceFrom: 200000,
+		priceTo: 280000,
 		propertyType: 'semi-detached',
 		sortBy: 'date',
 		sortType: 'd'
@@ -75,7 +75,7 @@ var Args    = require('arg-parser'), args,
 
 	_url = function (page) {
 		return 'http://www.myhome.ie/residential/dublin-county/semi-detached-house-for-sale-in-lucan?' +
-			'MinEnergyRating=D1&minbeds=3&maxbeds=3&page=' + page +
+			'MinEnergyRating=D1&minbeds=3&maxbeds=5&page=' + page +
 			'&minprice=' + _params.priceFrom + '&maxprice=' + _params.priceTo;
 	},
 

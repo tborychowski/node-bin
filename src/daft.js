@@ -3,8 +3,8 @@ var Args    = require('arg-parser'), args,
 	Msg     = require('node-msg'),
 	Cheerio = require('cheerio'),
 	_params = {
-		priceFrom: 175000,
-		priceTo: 250000,
+		priceFrom: 200000,
+		priceTo: 280000,
 		propertyType: 'semi-detached',
 		sortBy: 'date',
 		sortType: 'd'
@@ -72,7 +72,7 @@ var Args    = require('arg-parser'), args,
 	_url = function (page) {
 		return 'http://www.daft.ie/searchsale.daft?search=1&s[photos]=1&s[search_type]=sale&s[advanced]=1' +
 			'&s[refreshmap]=1&s[cc_id]=ct1&s[new]=2&s[pt_id]=1&s[a_id]=260&s[a_id_transport]=260' +
-			'&s[mnb]=3&s[mxb]=3&s[bd_no]=3&offset=' + (page * 10) +
+			'&s[mnb]=3&s[mxb]=&s[bd_no]=&offset=' + (page * 10) +
 			'&s[mnp]=' + _params.priceFrom + '&s[mxp]=' + _params.priceTo +
 			'&s[sort_by]=' + _params.sortBy + '&s[sort_type]=' + _params.sortType;
 	},
