@@ -1,94 +1,98 @@
 // jshint latedef: false
 var Args    = require('arg-parser'), args,
 	Msg     = require('node-msg'),
-	Cheerio = require('cheerio'),
 	_params = {
 		priceFrom: 200000,
 		priceTo: 280000,
-		propertyType: 'semi-detached',
 		sortBy: 'date',
 		sortType: 'd'
 	},
 	_loader = null,
-	_table = [],
-	_total = 0,
 
 	_ucWords = function (str) { return str.toLowerCase().replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); }); },
-	_getText = function (node, selector) { return node.find(selector).text().trim(); },
-	_getPrice = function (node, selector) { return _getText(node, selector).trim().replace(/\n/g, '').replace(/(.*€)(\d+,\d+)/, '$2'); },
-	_getRating = function (node, selector) { return node.find(selector).attr('alt'); },
-	_getName = function (node, selector) {
-		var name = _getText(node, selector).split('\n')[0].trim()
+	_getName = function (name) {
+		name = name.split('\n')[0].trim()
 			.replace(/Dublin\s?(west|south|north)?/i, '')
 			.replace('Lucan', '')
 			.replace('County', '')
 			.replace(/Co.?/, '')
 			.replace(/[,\s]+$/, '');
-
 		return _ucWords(name);
 	},
+	_getDesc = function (prop) {
+		var desc = prop.PropertyType.replace(/House/i, '').trim() + ' (' + prop.Bedrooms;
+		if (prop.Bathrooms) desc += '/' + prop.Bathrooms;
+		desc += ')';
+		if (prop.Size) desc += ', ' + prop.Size.toFixed() + 'm2';
+		return desc;
+	},
+	_getPrice = function (price) {
+		price = price.replace(/^[a-z\s:\€]+/i, '').replace(',', '');
+		return (parseInt(price, 10) / 1000).toFixed() + 'k';
+	},
 
-	_getDesc = function (node, selector) {
-		return _getText(node, selector).trim()
-			.replace(/Semi\-Detached/i, '')
-			.replace(/House/i, '')
-			.replace(/For Sale/i, '')
-			.replace(/(\d{2,4}\sft²)/, '')
-			.replace(/\//g, '')
-			.replace(/\s+/g, ' ');
+	_getRating = function (rating) {
+		rating = (rating || '--').toUpperCase();
+		var r = rating.substr(0, 1).toLowerCase(),
+			colors = { a: 'green', b: 'green', c: 'green bold', d: 'yellow', e: 'yellow bold', f: 'red bold' };
+		return Msg.paint(rating, colors[r] ? colors[r] : 'red');
 	},
 
 	_unwanted = function (name) {
-		var unwanted = [ 'foxborough', 'foxford', 'earlsfort', 'liffey', 'ashberry', 'finns', 'elm' ];
+		var unwanted = [ 'foxborough', 'foxford', 'earlsfort', 'liffey', 'ashberry', 'finns', 'elm', 'adams' ];
 		return (new RegExp(unwanted.join('|'), 'ig')).test(name);
 	},
 
-	_printTable = function () {
-		_loader.stop(_total);
-		_table.forEach(function (el) {
-			Msg.log(Msg.cyan(el.price) + ' ' + Msg.yellow(el.name) + Msg.grey(' ' + el.rating + ', ') + Msg.grey(el.desc));
+
+
+	_checkResponse = function (resp) {
+		if (!resp || !resp.length) return Msg.error('Server response is empty!');
+		json = JSON.parse(resp);
+		if (!json) return Msg.error('Server response is incorrect!');
+		if (!json.Properties || !json.Properties.length) return Msg.error('No results found!');
+		return json;
+	},
+
+
+	_formatResponse = function (resp) {
+		var json = _checkResponse(resp), name, rating, price, desc, table = [], total = 0;
+		if (!json) return;
+
+		total = json.ResultCount;
+
+		json.Properties.forEach(function (prop) {
+			if (_unwanted(prop.Address)) { total--; return; }
+
+			name = _getName(prop.Address);
+			rating = _getRating(prop.EnergyRating);
+			price = _getPrice(prop.Price);
+			desc = _getDesc(prop);			// e.g. semi-detached, (3/2)
+			table.push({ name: name, price: price, desc: desc, rating: rating });
+		});
+
+		_loader.stop(total + '/' + json.ResultCount);
+		table.forEach(function (el) {
+			Msg.log(Msg.cyan(el.price) + ' ' + el.rating + Msg.white(' ' + el.name + ' ') + Msg.grey(el.desc));
 		});
 	},
 
-	_formatResponse = function (html, page) {
-		var $ = Cheerio.load(html),
-			boxes = $('#results .resultBody'),
-			nextPageBtn = $('#main .pager .next'),
-			isLast = (!nextPageBtn.length || nextPageBtn.hasClass('disabled')),
-			name, desc, price, rating;
-
-		_total += boxes.length;
-
-		boxes.each(function (i, node) {
-			node = $(node);
-			name = _getName(node, '.address .ResidentialForSale');
-			rating = _getRating(node, '.address .listing');
-			desc = _getDesc(node, '.descriptionTitle .floatLeft');
-			price = _getPrice(node, '.price');
-			if (_unwanted(name)) { _total--; return; }
-			_table.push({ name: name, price: price, desc: desc, rating: rating });
-		});
-
-		if (isLast) return _printTable();
-		_load(page + 1);
+	_url = function () {
+		return 'http://www.myhome.ie/residential/dublin-county/property-for-sale-in-lucan?format=json&pageSize=50' +
+			'&type=37|38' +
+			// '&MinEnergyRating=D1' +
+			'&minbeds=3&minprice=' + _params.priceFrom + '&maxprice=' + _params.priceTo;
 	},
 
-	_url = function (page) {
-		return 'http://www.myhome.ie/residential/dublin-county/semi-detached-house-for-sale-in-lucan?' +
-			'MinEnergyRating=D1&minbeds=3&maxbeds=5&page=' + page +
-			'&minprice=' + _params.priceFrom + '&maxprice=' + _params.priceTo;
-	},
-
-	_load = function (page) {
+	_load = function () {
 		var resp = '';
-		require('http').request(_url(page), function (res) {
+		require('http').request(_url(), function (res) {
 			res.on('data', function (chunk) { resp += chunk; });
-			res.on('end', function () { _formatResponse(resp, page); });
+			res.on('end', function () { _formatResponse(resp); });
 		}).on('error', function (e) { _loader.stop(); Msg.error(e.message); }).end();
 	};
 
-args = new Args('home.ie', '1.0', 'Fetch home.ie search results');
+args = new Args('home.ie', '2.0', 'Fetch home.ie search results');
 if (args.parse()) {
 	_loader = new Msg.loading((new Date()).toISOString().substr(0, 10) + ', total: ');
-	_load(1);
+	_load();
 }

@@ -65,16 +65,18 @@ var Args    = require('arg-parser'), args,
 	_printTable = function () {
 		_loader.stop(_total);
 		_table.forEach(function (el) {
-			Msg.log(Msg.grey(el.date.date) + ' ' + Msg.cyan(el.price) + ' ' + Msg.yellow(el.name) + '  ' + Msg.grey(el.desc));
+			Msg.log(Msg.grey(el.date.date) + ' ' + Msg.cyan(el.price) + ' ' + Msg.white(el.name) + '  ' + Msg.grey(el.desc));
 		});
 	},
 
 	_url = function (page) {
-		return 'http://www.daft.ie/dublin-city/houses-for-sale/lucan?s[photos]=1&s[search_type]=sale&s[advanced]=1' +
-			'&s[refreshmap]=1&s[cc_id]=ct1&s[new]=2&s[pt_id]=1&s[a_id]=260&s[a_id_transport]=260' +
-			'&s[mnb]=3&s[mxb]=&s[bd_no]=&offset=' + (page * 10) +
-			'&s[mnp]=' + _params.priceFrom + '&s[mxp]=' + _params.priceTo +
-			'&s[sort_by]=' + _params.sortBy + '&s[sort_type]=' + _params.sortType;
+		return 'http://www.daft.ie/dublin-city/houses-for-sale/lucan?s[photos]=1&s[pt_id]=1&s[a_id_transport]=260' +
+			'&s[new]=2&s[advanced]=1&s[refreshmap]=1&s[mnb]=3' +
+			'&offset=' + (page * 10) +
+			'&s[mnp]=' + _params.priceFrom +
+			'&s[mxp]=' + _params.priceTo +
+			'&s[sort_by]=' + _params.sortBy +
+			'&s[sort_type]=' + _params.sortType;
 	},
 
 	_load = function (page) {
