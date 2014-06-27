@@ -27,7 +27,7 @@ var Args    = require('arg-parser'), args,
 		return desc;
 	},
 	_getPrice = function (price) {
-		price = price.replace(/^[a-z\s:\€]+/i, '').replace(',', '');
+		price = price.replace(/^[a-z\s:\€]+/i, '').replace(/,/g, '');
 		return (parseInt(price, 10) / 1000).toFixed() + 'k';
 	},
 

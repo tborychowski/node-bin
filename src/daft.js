@@ -17,7 +17,10 @@ var Args    = require('arg-parser'), args,
 	_getText = function (node, selector) { return node.find(selector).text().trim(); },
 	_getName = function (node, selector) { return _ucWords(_getText(node, selector).split('\n')[0].trim().replace(', Co. Dublin', '').replace(', Lucan', '')); },
 	_getDesc = function (node, selector) { return _getText(node, selector).split('|').map(function (s) { return s.replace(/ house/i, '').trim(); }).join(', ').trim(); },
-	_getPrice = function (node, selector) { return _getText(node, selector).trim().replace(/\n/g, '').replace(/(.*€)(\d+,\d+)/, '$2'); },
+	_getPrice = function (node, selector) {
+		var price = _getText(node, selector).trim().replace(/\n/g, '').replace(/^[a-z\s:€]+/i, '').replace(/,/g, '');
+		return (parseInt(price, 10) / 1000).toFixed() + 'k';
+	},
 	_getDate = function (node, selector) {
 		var d = _getText(node, selector).replace('Date Entered: ', ''),
 			date = d.replace(/(\d{1,2}\/\d{1,2}\/\d{4}).*/, '$1').split('/'),
