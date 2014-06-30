@@ -5,10 +5,11 @@ var Args    = require('arg-parser'), args,
 	_params = {
 		priceFrom: 200000,
 		priceTo: 280000,
-		propertyType: 'semi-detached',
 		sortBy: 'date',
+		// propertyType: 'semi-detached',
 		sortType: 'd'
 	},
+	_unwanted = [ 'foxborough', 'foxford', 'earlsfort', 'liffey', 'ashberry', 'finns', 'elm ', 'adams' ],
 	_loader = null,
 	_table = [],
 	_total = 0,
@@ -16,7 +17,9 @@ var Args    = require('arg-parser'), args,
 	_ucWords = function (str) { return str.toLowerCase().replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); }); },
 	_getText = function (node, selector) { return node.find(selector).text().trim(); },
 	_getName = function (node, selector) { return _ucWords(_getText(node, selector).split('\n')[0].trim().replace(', Co. Dublin', '').replace(', Lucan', '')); },
-	_getDesc = function (node, selector) { return _getText(node, selector).split('|').map(function (s) { return s.replace(/ house/i, '').trim(); }).join(', ').trim(); },
+	_getDesc = function (node, selector) {
+		return _getText(node, selector).split('|').map(function (s) { return s.replace(/ house/i, '').trim(); }).join(', ').trim();
+	},
 	_getPrice = function (node, selector) {
 		var price = _getText(node, selector).trim().replace(/\n/g, '').replace(/^[a-z\s:€]+/i, '').replace(/,/g, '');
 		return (parseInt(price, 10) / 1000).toFixed() + 'k';
@@ -29,10 +32,7 @@ var Args    = require('arg-parser'), args,
 		date[1] = ('0' + date[1]).substr(-2);
 		return { date: date.reverse().join('-'), rel: rel };
 	},
-	_unwanted = function (name) {
-		var unwanted = [ 'foxborough', 'foxford', 'earlsfort', 'liffey', 'ashberry', 'finns', 'elm' ];
-		return (new RegExp(unwanted.join('|'), 'ig')).test(name);
-	},
+	_isUnwanted = function (name) { return (new RegExp(_unwanted.join('|'), 'ig')).test(name); },
 
 	_formatResponse = function (html, page) {
 		var $ = Cheerio.load(html), boxes = $('#sr_content .box'), name, price, date, desc,
@@ -45,18 +45,20 @@ var Args    = require('arg-parser'), args,
 		}
 		else if (!boxes.length) return _printTable();
 
+
 		boxes.each(function (i, node) {
 			node = $(node);
+			if (node.hasClass('sponsored-box')) { _total--; return; }
 			name  = _getName(node, 'h2 a');
 			price = _getPrice(node, '.text-block .price');
 			desc  = _getDesc(node, '.text-block .info');
 			date  = _getDate(node, '.text-block .date_entered');
 			if (!name || !price) return;
 			if (reg && !reg.test(desc)) { _total--; return; }
-			if (_unwanted(name)) { _total--; return; }
+			if (_isUnwanted(name)) { _total--; return; }
 
 			if (name.length > 30) name = name.substr(0, 27) + '...';
-			desc = desc.replace(/(semi\-detached, )(\d{1})( beds?,? ?)(\d{1})?( baths?)?/i, function (s0, sem, bed, s1, bth) {
+			desc = desc.replace(/(\d{1})( beds?,? ?)(\d{1})?( baths?)?/i, function (sem, bed, s1, bth) {
 				return '(' + bed + (bth ? '/' + bth : '') + ')';
 			});
 
@@ -68,9 +70,10 @@ var Args    = require('arg-parser'), args,
 	_printTable = function () {
 		_loader.stop(_total);
 		_table.forEach(function (el) {
-			Msg.log(Msg.grey(el.date.date) + ' ' + Msg.cyan(el.price) + ' ' + Msg.white(el.name) + '  ' + Msg.grey(el.desc));
+			Msg.log(Msg.grey(el.date.date) + ' ' + Msg.cyan(el.price) + ' ' + Msg.white(el.name) + ' ' + Msg.grey(el.desc));
 		});
 	},
+
 
 	_url = function (page) {
 		return 'http://www.daft.ie/dublin-city/houses-for-sale/lucan?s[photos]=1&s[pt_id]=1&s[a_id_transport]=260' +
