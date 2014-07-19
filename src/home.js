@@ -7,6 +7,7 @@ var Args    = require('arg-parser'), args,
 		sortBy: 'date',
 		sortType: 'd'
 	},
+	_unwanted = [ 'foxborough', 'foxford', 'earlsfort', 'liffey', 'ashberry', 'finns', 'elm ', 'adams' ],
 	_loader = null,
 
 	_ucWords = function (str) { return str.toLowerCase().replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); }); },
@@ -38,10 +39,7 @@ var Args    = require('arg-parser'), args,
 		return Msg.paint(rating, colors[r] ? colors[r] : 'red');
 	},
 
-	_unwanted = function (name) {
-		var unwanted = [ 'foxborough', 'foxford', 'earlsfort', 'liffey', 'ashberry', 'finns', 'elm', 'adams' ];
-		return (new RegExp(unwanted.join('|'), 'ig')).test(name);
-	},
+	_isUnwanted = function (name) { return (new RegExp(_unwanted.join('|'), 'ig')).test(name); },
 
 
 
@@ -61,7 +59,7 @@ var Args    = require('arg-parser'), args,
 		total = json.ResultCount;
 
 		json.Properties.forEach(function (prop) {
-			if (_unwanted(prop.Address)) { total--; return; }
+			if (_isUnwanted(prop.Address)) { total--; return; }
 
 			name = _getName(prop.Address);
 			rating = _getRating(prop.EnergyRating);

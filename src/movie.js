@@ -9,7 +9,7 @@ var Args = require('arg-parser'), args,
 		'(\\d{3,4}p)', '(\\d+mb)', '([x|\\d]+cd)', '\\s\\d', 'brrip', 'dvd(scr(n)?)?(rip)?', 'blu\\-?ray', 'bdrip',
 		'h3ll2p4y', 'italian', 't4p3', 'vision', 'venum', 'rarbg', '(e\\-)?subs', 'hellraz0r', 'jyk', 'mms', 'titan',
 		'k3ly', 'presents00', 'destroy', 'hd', 'hc', 'rip', 'aqos', 'web', 'readnfo', 'subtitles', 'dus', 'BL4CKP34RL',
-		'ShAaNiG', 'new( good)? source', 'v2', 'millenium', 'newsource', 'dd5', 'dl',
+		'ShAaNiG', 'new( good)? source', 'v2', 'millenium', 'newsource', 'dd5', 'dl', 'english',
 		'web\\-?dl', '(br|hd)rip', 'hdcam(rip)?', 'r5', 'r6', 'cam', 'sumo', 'webrip', 'ntsc'
 	],
 
