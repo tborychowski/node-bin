@@ -6,7 +6,7 @@ var Args = require('arg-parser'), args,
 	Crypto = require('crypto'),
 	loader,
 
-	_confFname = __dirname + '\\' + Path.basename(__filename, '.js') + '.json',
+	_confFname = __dirname + Path.sep + Path.basename(__filename, '.js') + '.json',
 	_conf = FS.existsSync(_confFname) ? require(_confFname) : null,
 
 
@@ -37,12 +37,13 @@ var Args = require('arg-parser'), args,
 	},
 
 	_showError = function (err) {
-		loader.stop();
+		if (loader) loader.stop();
 		Msg.error(err);
 	},
 
-	_parseResponse = function (login, resp) {
-		loader.stop();
+	_parseResponse = function (login, resp, params) {
+		if (loader) loader.stop();
+		if (params.short) return Msg.log(resp.unread);
 		Msg.log(Msg.paint(resp.msg, 'cyan bold'));
 		if (resp.messages) resp.messages.forEach(function (m) { Msg.log('- ' + m); });
 		// Msg.print('\nTotal: ' + resp.total, 'grey bold');
@@ -66,13 +67,13 @@ var Args = require('arg-parser'), args,
 	/**
 	 * Checks gmail for unread messages
 	 */
-	_check = function (params) {
+	_check = function (creds, params) {
 		var msgs = {},
 			successResult = {},
 			imap = new Imap({ host: 'imap.gmail.com', port: 993, tls: true, tlsOptions: { rejectUnauthorized: false },
-				user: params.l, password: params.p });
+				user: creds.l, password: creds.p });
 
-		loader = new Msg.loading();
+		if (!params.short) loader = new Msg.loading();
 		imap.once('error', _showError);
 		// imap.once('end', function () { console.log('Connection ended'); });
 		imap.once('ready', function () {
@@ -86,7 +87,7 @@ var Args = require('arg-parser'), args,
 					if (!results || !results.length) {
 						imap.end();
 						successResult.msg = 'You have no unread messages!';
-						return _parseResponse(params.l, successResult);
+						return _parseResponse(creds.l, successResult, params);
 					}
 
 					var f = imap.fetch(results, { bodies: '' });
@@ -114,7 +115,7 @@ var Args = require('arg-parser'), args,
 						for (m in msgs) { messages.push(msgs[m]); count++; }
 						successResult.messages = messages;
 						successResult.msg = 'You have ' + count + ' unread message' + (count > 1 ? 's' : '') + '!';
-						_parseResponse(params.l, successResult);
+						_parseResponse(creds.l, successResult, params);
 					});
 				});
 			});
@@ -130,9 +131,10 @@ var detailsDesc = 'If -a switch is passed, details should be in format:\n' +
 args = new Args('GmailChecker', '1.0', 'Check unread gmail messages');
 args.add({ name: 'add', desc: 'Encrypt and ADD a gmail account to the config file', switches: ['-a', '--add'] });
 args.add({ name: 'details', desc: detailsDesc });
+args.add({ name: 'short', switches: [ '-s', '--short' ], desc: 'Just show the number of unread messages' });
 
 if (args.parse()) {
 	if (args.params.add) _add(args.params.details.split(' '));
 	else if (!_conf) Msg.error('Config file missing. Please add account first!');
-	else _check(_parseConfig(_conf, args.params.details));
+	else _check(_parseConfig(_conf, args.params.details), args.params);
 }
