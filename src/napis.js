@@ -9,7 +9,7 @@ var
 	Path = require('path'),
 
 	_isWin = /^win/.test(process.platform),
-	_videos = [ '.avi', '.mpg', '.mpeg', '.mp4', '.mov', '.wmv' ],
+	_videos = [ '.avi', '.mpg', '.mpeg', '.mp4', '.mov', '.wmv', '.mkv' ],
 
 
 	/*** HELPERS ******************************************************************************************************/

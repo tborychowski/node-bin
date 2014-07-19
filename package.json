@@ -4,18 +4,18 @@
   "description": "node terminal helpers scripts",
   "main": "",
   "dependencies": {
-    "arg-parser": "~1.0.1",
-    "cheerio": "~0.15.0",
+    "arg-parser": "^1.1.0",
+    "cheerio": "^0.17.0",
+    "gulp": "^3.8.5",
+    "gulp-insert": "^0.4.0",
+    "gulp-util": "~2.2.14",
+    "htmlparser": "~1.7.7",
     "imap": "~0.8.9",
     "node-msg": "~1.2.1",
     "q": "~1.0.1",
     "soupselect": "~0.2.0",
     "underscore": "~1.6.0",
-    "htmlparser": "~1.7.7",
-    "xml2js": "~0.4.1",
-    "gulp": "~3.6.0",
-    "gulp-insert": "~0.3.0",
-    "gulp-util": "~2.2.14"
+    "xml2js": "~0.4.1"
   },
   "devDependencies": {},
   "scripts": {
