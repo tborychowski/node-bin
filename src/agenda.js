@@ -62,7 +62,7 @@ var Args = require('arg-parser'), args,
 
 	_printAgenda = function (agenda, params) {
 		var date, now = _today(), tod = now.toDateString().slice(0, -4), lim = new Date(), table = [],
-			offset = 95;
+			offset = parseInt(params.offset, 10) || 0;
 
 		if (params.limit) lim = lim.setDate(lim.getDate() + parseInt(params.limit, 10));
 
@@ -143,5 +143,6 @@ args.add({ name: 'short', switches: [ '-s', '--short' ], desc: 'Just show the nu
 args.add({ name: 'cache', switches: [ '-c', '--cache' ], desc: 'Cache results in a file' });
 args.add({ name: 'cacheFile', switches: [ '-f', '--file' ], desc: 'Cache File path (file_name.cache)' });
 args.add({ name: 'time', switches: [ '-t', '--time' ], desc: 'Show cached result if not older than "time"', value: 'min', default: 30 });
+args.add({ name: 'offset', switches: [ '-o', '--offset' ], desc: 'Offset text for conky', value: 'px', default: 0 });
 
 if (args.parse()) _init(args.params);
