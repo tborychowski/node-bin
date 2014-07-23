@@ -10,3 +10,7 @@ gulp.task('build', function () {
 });
 
 gulp.task('default', [ 'build' ]);
+
+gulp.task('watch', function () {
+	gulp.watch('./src/*.js',    [ 'build' ]);
+});

@@ -6,6 +6,7 @@ var Args = require('arg-parser'), args,
 	Crypto = require('crypto'),
 	loader,
 
+	_filePath = __dirname + Path.sep + Path.basename(__filename, '.js') + '.cache',
 	_confFname = __dirname + Path.sep + Path.basename(__filename, '.js') + '.json',
 	_conf = FS.existsSync(_confFname) ? require(_confFname) : null,
 
@@ -41,7 +42,7 @@ var Args = require('arg-parser'), args,
 		Msg.error(err);
 	},
 
-	_parseResponse = function (login, resp, params) {
+	_parseResponse = function (resp, params) {
 		if (loader) loader.stop();
 		if (params.short) return Msg.log(resp.unread);
 		Msg.log(Msg.paint(resp.msg, 'cyan bold'));
@@ -49,6 +50,32 @@ var Args = require('arg-parser'), args,
 		// Msg.print('\nTotal: ' + resp.total, 'grey bold');
 		// if (resp.unread) Msg.print('Unread: ' + resp.unread, 'grey bold');
 		process.exit();
+	},
+
+	/**
+	 * Check if there are cached results and return true if there are
+	 * @return {boolean} true - there is cache; false - no cache, file doesnt exist or is too old
+	 */
+	_isCached = function (params) {
+		// file not found - return false
+		if (!FS.existsSync(_filePath)) return false;
+
+		// file too old - return false
+		var fileModTime = new Date(FS.statSync(_filePath).mtime), diff = (new Date() - fileModTime) / 60000;
+		if (diff >= params.time) return false;
+
+		// file read error - return false
+		var f = FS.readFileSync(_filePath), json;
+		try { json = JSON.parse(f); } catch(e) {}
+		if (!json) return false;
+
+		return true;		// else - return true
+	},
+
+	_cache = function (json) {
+		FS.writeFile(_filePath, JSON.stringify(json), function (err) {
+			if (err) return Msg.error(err);
+		});
 	},
 	/*** HELPERS ******************************************************************************************************/
 
@@ -68,12 +95,22 @@ var Args = require('arg-parser'), args,
 	 * Checks gmail for unread messages
 	 */
 	_check = function (creds, params) {
-		var msgs = {},
-			successResult = {},
-			imap = new Imap({ host: 'imap.gmail.com', port: 993, tls: true, tlsOptions: { rejectUnauthorized: false },
-				user: creds.l, password: creds.p });
+		var msgs = {}, successResult = {}, imap;
+
+		if (params.cacheFile) _filePath = params.cacheFile;
+		if (params.cache && _isCached(params)) return _parseResponse(JSON.parse(FS.readFileSync(_filePath)), params);
 
 		if (!params.short) loader = new Msg.loading();
+
+		imap = new Imap({
+			host: 'imap.gmail.com',
+			port: 993,
+			tls: true,
+			tlsOptions: { rejectUnauthorized: false },
+			user: creds.l,
+			password: creds.p
+		});
+
 		imap.once('error', _showError);
 		// imap.once('end', function () { console.log('Connection ended'); });
 		imap.once('ready', function () {
@@ -87,7 +124,8 @@ var Args = require('arg-parser'), args,
 					if (!results || !results.length) {
 						imap.end();
 						successResult.msg = 'You have no unread messages!';
-						return _parseResponse(creds.l, successResult, params);
+						if (params.cache) _cache(successResult);
+						return _parseResponse(successResult, params);
 					}
 
 					var f = imap.fetch(results, { bodies: '' });
@@ -115,7 +153,9 @@ var Args = require('arg-parser'), args,
 						for (m in msgs) { messages.push(msgs[m]); count++; }
 						successResult.messages = messages;
 						successResult.msg = 'You have ' + count + ' unread message' + (count > 1 ? 's' : '') + '!';
-						_parseResponse(creds.l, successResult, params);
+
+						if (params.cache) _cache(successResult);
+						_parseResponse(successResult, params);
 					});
 				});
 			});
@@ -132,6 +172,10 @@ args = new Args('GmailChecker', '1.0', 'Check unread gmail messages');
 args.add({ name: 'add', desc: 'Encrypt and ADD a gmail account to the config file', switches: ['-a', '--add'] });
 args.add({ name: 'details', desc: detailsDesc });
 args.add({ name: 'short', switches: [ '-s', '--short' ], desc: 'Just show the number of unread messages' });
+args.add({ name: 'cache', switches: [ '-c', '--cache' ], desc: 'Cache results in a file' });
+args.add({ name: 'cacheFile', switches: [ '-f', '--file' ], desc: 'Cache File path (file_name.cache)' });
+args.add({ name: 'time', switches: [ '-t', '--time' ], desc: 'Show cached result if not older than "time"', value: 'min', default: 5 });
+
 
 if (args.parse()) {
 	if (args.params.add) _add(args.params.details.split(' '));
