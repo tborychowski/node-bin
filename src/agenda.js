@@ -139,7 +139,7 @@ var Args = require('arg-parser'), args,
 
 args = new Args('Agenda', '2.0', 'List tasks for today');
 args.add({ name: 'limit', switches: [ '-l', '--limit' ], desc: 'How many days in the future', value: 'DAYS', default: 3 });
-args.add({ name: 'short', switches: [ '-s', '--short' ], desc: 'Just show the number of unread messages' });
+args.add({ name: 'short', switches: [ '-s', '--short' ], desc: 'Don\'t show table headers' });
 args.add({ name: 'cache', switches: [ '-c', '--cache' ], desc: 'Cache results in a file' });
 args.add({ name: 'cacheFile', switches: [ '-f', '--file' ], desc: 'Cache File path (file_name.cache)' });
 args.add({ name: 'time', switches: [ '-t', '--time' ], desc: 'Show cached result if not older than "time"', value: 'min', default: 30 });
