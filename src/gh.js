@@ -1,10 +1,8 @@
-#!/usr/bin/env node
-
 'use strict';
 
 var Args = require('arg-parser');
 var Msg = require('node-msg');
-var Open = require('Open');
+var Open = require('open');
 var Path = require('path');
 var FS = require('fs');
 var args;
