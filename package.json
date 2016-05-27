@@ -1,25 +1,25 @@
 {
   "name": "node-bin",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "node terminal helpers scripts",
   "main": "",
   "dependencies": {
     "arg-parser": "^1.1.0",
-    "cheerio": "^0.17.0",
-    "gulp": "^3.8.5",
-    "gulp-insert": "^0.4.0",
-    "gulp-util": "~2.2.14",
+    "cheerio": "^0.19.0",
     "htmlparser": "~1.7.7",
     "imap": "~0.8.9",
     "node-msg": "~1.2.1",
     "open": "0.0.5",
-    "q": "~1.0.1",
+    "q": "^1.4.1",
     "soupselect": "~0.2.0",
-    "underscore": "~1.6.0",
+    "underscore": "^1.8.3",
     "xml2js": "~0.4.1"
   },
   "devDependencies": {
-    "gulp-watch": "~0.6.8"
+    "gulp": "^3.9.0",
+    "gulp-insert": "^0.5.0",
+    "gulp-util": "^3.0.7",
+    "gulp-watch": "^4.3.5"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
