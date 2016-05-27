@@ -9,6 +9,6 @@ do
 	echo -e "\e[32m[OK]\e[39m ${f%.*}"
 
 	# cp $f /usr/local/bin/${f%.*}
-	# cp $DIR/$f $HOME/bin/${f%.*}
 	# sed -i '1i#!/usr/bin/node' /usr/local/bin/${f%.*}
+	cp $DIR/$f $HOME/bin/${f%.*}
 done
