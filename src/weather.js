@@ -1,6 +1,6 @@
 // http://openweathermap.org/api
 var Args = require('arg-parser'), args,
-	Msg  = require('node-msg'),
+	Msg = require('node-msg'),
 	_url = 'http://api.openweathermap.org/data/2.5/weather?appid=afe9ed75c174bff3c0f900fe0c15f994&units=metric&q=',
 
 	_parseResponse = function (json) {
