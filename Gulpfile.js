@@ -1,16 +1,16 @@
-var gulp = require('gulp'),
-	gutil = require('gulp-util'),
-	insert = require('gulp-insert'),
-	isWin = /^win/.test(require('os').platform());
+const { series, src, dest, watch } = require('gulp');
+const insert = require('gulp-insert');
 
-gulp.task('build', function () {
-	var files = gulp.src('./src/*.js');
-	if (!isWin) files = files.pipe(insert.prepend('#!/usr/bin/env node\n'));
-	return files.pipe(gulp.dest('./dist'));
-});
 
-gulp.task('default', [ 'build' ]);
+function build () {
+	return src('./src/*.js')
+		.pipe(insert.prepend('#!/usr/bin/env node\n'))
+		.pipe(dest('./dist'));
+}
 
-gulp.task('watch', function () {
-	gulp.watch('./src/*.js',    [ 'build' ]);
-});
+function watchTask () {
+	watch('./src/*.js', build);
+}
+
+exports.watch = watchTask;
+exports.default = build;

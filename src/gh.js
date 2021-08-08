@@ -1,5 +1,3 @@
-'use strict';
-
 var Args = require('arg-parser');
 var Msg = require('node-msg');
 var Open = require('open');
